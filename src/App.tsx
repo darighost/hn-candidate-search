@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import './App.css'
 import './Homepage.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [skills, setSkills]: [
+    undefined | string[],
+    Dispatch<SetStateAction<undefined>>
+  ] = useState(undefined)
 
   return (
     <>
@@ -13,7 +16,17 @@ function App() {
       {/* Just learned about <search>. I love obscure/new HTML elements
       https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search */}
       <search>
-        Search for: <input type="search" />
+          <div>
+            <label>Skills: </label>
+            <input type="search" placeholder="python, infosec, etc" />
+          </div>
+          <div>
+            <label>Location: </label>
+            <input type="text" /></div>
+          <div>
+            <label>Remote: </label>
+            <input type="checkbox" />
+          </div>
       </search>
 
       <section style={{width: "700px", textAlign: "left", border: "1px solid black", padding: "20px"}}>
@@ -21,7 +34,7 @@ function App() {
         (breaks into subcomponents of course)
         posts separated by very simple &lt;hr&gt; with links to original comment in normal link colors
       </section>
-      footer component here, link to code
+      <footer>i'm <a id="egolink" href="https://linktr.ee/darigo">darigo</a>, i hope this was useful for you :3</footer>
     </>
   )
 }
