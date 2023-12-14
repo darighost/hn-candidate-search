@@ -5,7 +5,7 @@ import './Homepage.css'
 const Welcome = () => {
   return (
     <>
-      <center><h2 style={{marginTop: "0px", marginBottom: "8px"}}>[placeholder]</h2></center>
+      <center><h2 style={{marginTop: "0px", marginBottom: "50px"}}>[placeholder]</h2></center>
       Use the navbar to search for skills (comma-separated) or a locale above
       <p />
       Or, you can just click <b>Show all</b> to see every single listing
@@ -13,14 +13,15 @@ const Welcome = () => {
       For bugs + requests, create an issue:<br /> <a href="https://github.com/darighost/hn-candidate-search">github.com/darighost/hn-candidate-search</a>
       <p />
       ~ happy recruiting!
+      <div style={{marginBottom: "20px"}}></div>
     </>
   )
 }
 
-const Post = ({id, text}: {id: number, text: string}) => {
+const Post = ({id, text, author, when}: {id: number, text: string, author: string, when: string}) => {
   return (
     <>
-      <span style={{"float": "right"}}><i>(author link) on (date)</i></span>
+      <span style={{"float": "right"}}><i><a href={`https://news.ycombinator.com/user?id=${author}`}>{author}</a> on {when.split('T')[0]}</i></span>
       <p key={id} dangerouslySetInnerHTML={{"__html": text.replaceAll('\n', '<br />')}} />
       <hr />
     </>
@@ -36,7 +37,7 @@ const Posts = ({posts: rawPosts}: {posts: any}) => {
   })
   return (
     <div>
-      {posts.map((e: any) => <Post key={e['id']} id={e['id']} text={e['text']} />)}
+      {posts.map((e: any) => <Post key={e['id']} id={e['id']} text={e['text']} when={e['createdAt']} author={e['by']} />)}
       
     </div>
   );
@@ -66,7 +67,6 @@ function App() {
     string[],
     Dispatch<SetStateAction<string[]>>
   ] = useState([] as string[])
-
   useEffect(() => {
     (async () => {
       // these requests could be prettier (ie, one func per graphql req, and the graphql code also outsourced to be multiline and thus prettier)
@@ -137,10 +137,10 @@ function App() {
           </div>
           <div>
             <label>Remote: </label>
-            <input type="checkbox" onClick={()=>{setRemote(!remote); setVirgin(false)}} />
+            <input type="checkbox" onClick={()=>{setRemote(!remote); setVirgin(false);}} />
           </div>
           <div>
-            <input onClick={()=>{if (!virgin) {setVisiblePosts([]); setLocation("")} else { setVisiblePosts(candidatePosts) }; setVirgin(!virgin)}} type="button" value={virgin ? "Show all" : "Reset"} />
+            <input onClick={()=>{if (!virgin) {setVisiblePosts([]); setLocation("")} else { setVisiblePosts(candidatePosts) }; setVirgin(!virgin);}} type="button" value={virgin ? "Show all" : "Reset"} />
           </div>
       </search>}
       <i style={{fontSize: "small"}}>{virgin ? "" : `(${visiblePosts.length} results)`}</i>
