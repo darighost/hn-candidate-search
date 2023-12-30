@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Welcome from './components/Welcome';
 import SearchBar from './components/SearchBar';
 import Posts from './components/Posts';
@@ -56,6 +56,7 @@ function App() {
             }
             const niceText = post['text'].toLowerCase()
             const happySkills = skills.every(skill => {
+              // @ts-ignore
               const niceSkill = skill.toLowerCase().trim()
               return niceText.includes(niceSkill)
             })
