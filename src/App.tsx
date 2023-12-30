@@ -1,72 +1,20 @@
 import { Dispatch, SetStateAction, useState, useEffect } from 'react'
+import Welcome from './components/Welcome';
+import SearchBar from './components/SearchBar';
+import Posts from './components/Posts';
+import Loading from './components/Loading';
 import './App.css'
 import './Homepage.css'
 
-const Welcome = () => {
-  return (
-    <>
-      <center><h2 style={{marginTop: "0px", marginBottom: "50px"}}>[placeholder]</h2></center>
-      Use the navbar to search for skills (comma-separated) or a locale above
-      <p />
-      Or, you can just click <b>Show all</b> to see every single listing
-      <p />
-      For bugs + requests, create an issue:<br /> <a href="https://github.com/darighost/hn-candidate-search">github.com/darighost/hn-candidate-search</a>
-      <p />
-      ~ happy recruiting!
-      <div style={{marginBottom: "20px"}}></div>
-    </>
-  )
-}
-
-const Post = ({id, text, author, when}: {id: number, text: string, author: string, when: string}) => {
-  return (
-    <>
-      <span style={{"float": "right"}}><i><a target='_blank' href={`https://news.ycombinator.com/user?id=${author}`}>{author}</a> on {when.split('T')[0]}</i></span>
-      <p key={id} dangerouslySetInnerHTML={{"__html": text.replaceAll('\n', '<br />')}} />
-      <hr />
-    </>
-  );
-}
-
-const Posts = ({posts: rawPosts}: {posts: any}) => {
-  const posts = rawPosts.filter((post: any) => {
-    return post['text']
-      && /[a-z]/i.test(post['text'])
-      && !post['text'].includes('[dead]')
-      && !post['text'].includes('[flagged]')
-  })
-  return (
-    <div>
-      {posts.map((e: any) => <Post key={e['id']} id={e['id']} text={e['text']} when={e['createdAt']} author={e['by']} />)}
-      
-    </div>
-  );
-}
-
-const Loading = () => {
-  return (
-    <>
-      <search style={{color: "darkgray"}}>
-        Loading HN comments from API...
-      </search>
-    </>
-  )
-}
-
 function App() {
   const [loading, setLoading] = useState(true);
-  const [candidatePosts, setCandidatePosts] = useState([]);
-  {/* the remote feature is nearly useless in practice.
-  Almost *everyone* lists remote as preferred/yes/ok, etc.
-  Nevertheless, I feel like people will want to be able to select this, so it's here */}
-  const [visiblePosts, setVisiblePosts] = useState([])
+  const [virgin, setVirgin] = useState(true);
   const [remote, setRemote] = useState(false);
   const [location, setLocation] = useState("");
-  const [virgin, setVirgin] = useState(true);
-  const [skills, setSkills]: [
-    string[],
-    Dispatch<SetStateAction<string[]>>
-  ] = useState([] as string[])
+  const [candidatePosts, setCandidatePosts] = useState([]);
+  const [visiblePosts, setVisiblePosts] = useState([])
+  const [skills, setSkills] = useState([])
+
   useEffect(() => {
     (async () => {
       // these requests could be prettier (ie, one func per graphql req, and the graphql code also outsourced to be multiline and thus prettier)
@@ -108,10 +56,10 @@ function App() {
             }
             const niceText = post['text'].toLowerCase()
             const happySkills = skills.every(skill => {
-              const niceSkill = skill.toLowerCase()
+              const niceSkill = skill.toLowerCase().trim()
               return niceText.includes(niceSkill)
             })
-            const happyLocal = niceText.includes(location.toLowerCase())
+            const happyLocal = niceText.includes(location.toLowerCase().trim())
             return happyLocal && happySkills;
           }
         })
@@ -126,23 +74,19 @@ function App() {
       {/* Just learned about <search>. I love obscure/new HTML elements
       https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search
       This whole little search bar needs to be its own component btw */}
-      {loading ? <Loading /> : <search>
-          <div>
-            <label>Skills: </label>
-            <input onChange={(e: any) => {setSkills(e.target.value.split(/,\s+/)); setVirgin(false)}} type="search" placeholder="python, infosec, etc" />
-          </div>
-          <div>
-            <label>Location: </label>
-            <input type="text" onChange={(e)=>setLocation(e.target.value)} />
-          </div>
-          <div>
-            <label>Remote: </label>
-            <input type="checkbox" onClick={()=>{setRemote(!remote); setVirgin(false);}} />
-          </div>
-          <div>
-            <input onClick={()=>{if (!virgin) {setVisiblePosts([]); setLocation("")} else { setVisiblePosts(candidatePosts) }; setVirgin(!virgin);}} type="button" value={virgin ? "Show all" : "Reset"} />
-          </div>
-      </search>}
+      {loading ? <Loading /> : <SearchBar 
+        {...{
+          virgin,
+          remote,
+          location,
+          skills,
+          candidatePosts,
+          setVirgin, 
+          setSkills,
+          setLocation,
+          setRemote,
+          setVisiblePosts
+        }} />}
       <i style={{fontSize: "small"}}>{virgin ? "" : `(${visiblePosts.length} results)`}</i>
       <section style={{ width: "700px", textAlign: "left", border: "1px solid black", padding: "30px", wordWrap: "break-word" }}>
         {virgin ? <Welcome /> : <Posts posts={visiblePosts} />}
