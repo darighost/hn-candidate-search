@@ -51,7 +51,7 @@ function App() {
       candidatePosts
         .filter((post: any) => {
           if (post['text']) {
-            if (remote && /remote:\s+no/i.test(post['text'])) {
+            if (remote && /remote:\s*no/i.test(post['text'])) {
                 return false;
             }
             const niceText = post['text'].toLowerCase()

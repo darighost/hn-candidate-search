@@ -29,7 +29,7 @@ const SearchBar = ({
           value={skills.join(', ')}
           onChange={
             (e: any) => {
-              setSkills(e.target.value.split(/,\s+/)); setVirgin(false)}
+              setSkills(e.target.value.split(/,\s*/)); setVirgin(false)}
             }
           type="search"
           placeholder="python, infosec, etc"
